@@ -128,7 +128,7 @@ dsh plugin --profile web add link:<本仓库>/plugin
 
 ## 打开 DSH ＝ 一个独立应用窗口
 
-![设置页](docs/shots/gui-settings.png)
+![设置页](docs/shots/gui-settings.jpg)
 
 打开 DSH 的入口（双击宠物、托盘菜单、桌面「DSH」图标、桌面「DSH 重启」之后）都走同一个窗口：
 
