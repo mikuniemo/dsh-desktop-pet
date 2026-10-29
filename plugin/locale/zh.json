@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "title": "桌宠",
+    "description": "独立透明置顶的桌面宠物：跟着工具调用演出、头顶显示 token 消耗，位置和角色跨会话记忆。"
+  },
+  "nav": {
+    "title": "桌宠"
+  },
+  "page": {
+    "title": "桌宠",
+    "subtitle": "一只住在桌面上的小家伙，会跟着我干活。",
+    "statusOnline": "已连接",
+    "statusOffline": "未连接",
+    "statusConnecting": "连接中…",
+    "bridgeMissing": "读不到桥接信息，桌宠插件可能没有生效。重启一次 DSH 再回来。",
+    "petTitle": "桌宠本体",
+    "petHint": "桌面程序是一个独立窗口，关掉它只影响显示，不影响插件。",
+    "character": "角色",
+    "scale": "大小",
+    "show": "显示桌宠",
+    "hide": "藏起来",
+    "resetPosition": "回到默认位置",
+    "testSay": "让它说句话",
+    "followTools": "跟着工具调用演出",
+    "followToolsHint": "思考、读文件、跑命令、报错、完成，各有动作和台词。",
+    "showBubble": "说话气泡",
+    "showTokens": "头顶显示 token 消耗",
+    "sounds": "音效",
+    "clickThrough": "鼠标穿透",
+    "clickThroughHint": "开启后点击会穿到下面的窗口，只能从托盘菜单关掉。",
+    "alwaysOnTop": "始终置顶",
+    "reduceMotion": "减少动效",
+    "idleChatter": "闲着自己搭话",
+    "idleChatterHint": "长时间没人理它，会自己嘀咕、犯困、睡觉。",
+    "hunger": "会饿",
+    "hungerHint": "饿了会提醒你，拖个文件给它吃就恢复了。",
+    "characters": {
+      "whale": "鲸鱼娘（大肥鱼）",
+      "cat": "橘子（橘猫）",
+      "ghost": "小幽（幽灵）",
+      "slime": "果冻（史莱姆）"
+    },
+    "saved": "已保存",
+    "saveFailed": "保存失败",
+    "reload": "刷新状态"
+  }
+}

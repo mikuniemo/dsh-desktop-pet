@@ -1,0 +1,17 @@
+{
+  "name": "dsh-desktop-pet-repo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DSH 桌宠：真桌面窗口的鲸鱼娘 + DeepSeek Harness 插件（跟随工具调用演出、token 角标）。",
+  "license": "MIT",
+  "author": "mikun",
+  "scripts": {
+    "pet:install": "npm --prefix pet install",
+    "pet:dev": "npm --prefix pet run dev",
+    "pet:build": "npm --prefix pet run build",
+    "pet:dist": "npm --prefix pet run dist",
+    "pet:typecheck": "npm --prefix pet run typecheck",
+    "check:plugin": "node --check plugin/index.js && node --check plugin/client.js && node --check plugin/lib/bridge.js && node --check plugin/lib/store.js && node --check plugin/lib/watcher.js && node --check plugin/lib/actions.js && node --check plugin/lib/pet-process.js && echo plugin-ok",
+    "shot": "pwsh -NoProfile -File scripts/capture-window.ps1 -Out docs/shots/latest.png"
+  }
+}

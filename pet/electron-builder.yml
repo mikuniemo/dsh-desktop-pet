@@ -1,0 +1,21 @@
+appId: com.mikun.dsh-desktop-pet
+productName: DSH Desktop Pet
+directories:
+  output: dist
+  buildResources: build
+files:
+  - out/**
+  - package.json
+extraResources:
+  - from: resources/focus-gui.ps1
+    to: focus-gui.ps1
+  - from: resources/tray.png
+    to: tray.png
+  - from: resources/app-icon.ico
+    to: app-icon.ico
+win:
+  target:
+    - portable
+  icon: resources/app-icon.ico
+portable:
+  artifactName: ${productName}-${version}-portable.exe

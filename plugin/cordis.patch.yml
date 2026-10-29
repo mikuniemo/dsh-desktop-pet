@@ -1,0 +1,29 @@
+# dsh-desktop-pet bundle patch
+#
+# 这个文件是插件的“挂载声明”：DSH 启动时按 bundle 层栈叠加各插件 patch，
+# 把下面的 Host 行插入 Web profile 的配置树。
+#
+# Host 半（index.js）负责：
+#   - 在 127.0.0.1 起一个只服务本机桌宠的桥接服务（HTTP + SSE）；
+#   - 监听 DSH 的 session/event，把工具调用/报错/完成翻译成桌宠动作；
+#   - 写发现文件 <数据目录>/bridge.json，让桌面程序找到端口和 token；
+#   - 按配置拉起桌面程序（pet/ 里的 Electron 应用）。
+# Client 半（client.js）负责：设置 → 「桌宠」页。
+#
+# 想改默认值就改下面 config 里的键（全部可选）：
+#   enabled      true     总开关
+#   port         39918    桥接端口（0 = 随机挑一个空闲端口）
+#   spawnPet     true     插件是否负责拉起/托管桌面程序
+#   petAppDir    ''       桌面程序源码目录（开发模式用，含 package.json + node_modules/electron）
+#   petExecutable ''      已打包好的 .exe 绝对路径（可选，优先于 petAppDir）
+#   logLevel     'info'   'silent' | 'info' | 'debug'
+#
+# 注意：保留 id: desktop-pet —— 它是设置页和发现文件里的稳定标识。
+- insert:
+    - id: desktop-pet
+      name: 'dsh-desktop-pet'
+      config:
+        enabled: true
+        port: 39918
+        spawnPet: true
+        logLevel: info

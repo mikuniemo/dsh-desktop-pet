@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "title": "Desktop Pet",
+    "description": "A real always-on-top desktop pet that acts out tool calls and shows token usage above its head, remembering position and character across sessions."
+  },
+  "nav": {
+    "title": "Desktop Pet"
+  },
+  "page": {
+    "title": "Desktop Pet",
+    "subtitle": "A little creature living on your desktop, keeping up with the work.",
+    "statusOnline": "Connected",
+    "statusOffline": "Not connected",
+    "statusConnecting": "Connecting…",
+    "bridgeMissing": "No bridge information found. The pet plugin may not be active — restart DSH and come back.",
+    "petTitle": "The pet",
+    "petHint": "The desktop pet is a standalone window. Closing it only hides the pet; the plugin keeps running.",
+    "character": "Character",
+    "scale": "Size",
+    "show": "Show pet",
+    "hide": "Hide",
+    "resetPosition": "Reset position",
+    "testSay": "Make it talk",
+    "followTools": "Act out tool calls",
+    "followToolsHint": "Thinking, reading, running commands, errors and completions each get their own pose and line.",
+    "showBubble": "Speech bubble",
+    "showTokens": "Show token usage overhead",
+    "sounds": "Sounds",
+    "clickThrough": "Click-through",
+    "clickThroughHint": "Clicks pass to the window below. Turn it off from the tray menu.",
+    "alwaysOnTop": "Always on top",
+    "reduceMotion": "Reduce motion",
+    "idleChatter": "Idle chatter",
+    "idleChatterHint": "When ignored for a while it mutters, dozes off and sleeps.",
+    "hunger": "Gets hungry",
+    "hungerHint": "It will remind you when hungry; drop a file on it to feed it.",
+    "characters": {
+      "whale": "Whale Girl (Dafeiyu)",
+      "cat": "Juzi (orange cat)",
+      "ghost": "Xiaoyou (ghost)",
+      "slime": "Jelly (slime)"
+    },
+    "saved": "Saved",
+    "saveFailed": "Save failed",
+    "reload": "Refresh"
+  }
+}

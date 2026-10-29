@@ -1,0 +1,7 @@
+{
+  "name": "dsh-gui-capture",
+  "private": true,
+  "version": "0.1.0",
+  "description": "开发辅助：用 Electron 打开 DSH 界面并截图，用来验证插件设置页。",
+  "main": "main.js"
+}

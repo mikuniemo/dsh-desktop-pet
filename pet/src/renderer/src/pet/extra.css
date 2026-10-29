@@ -1,0 +1,430 @@
+/* ==================================================================
+   DSH 联动的"表演层"
+   ------------------------------------------------------------------
+   姿态 = 换视图（正/侧/背） + 这里定义的动作动画 + App.tsx 的道具/特效
+   其余基础动画（呼吸、蹦跳、摇晃、进食、睡觉）来自 characters.css。
+   ================================================================== */
+
+/* ---------- 思考 / 干活 两个姿态（SVG 备用角色也用） ---------- */
+
+.mode-think .pet-bob {
+  animation: think-hover calc(2.8s * var(--speed, 1)) ease-in-out infinite;
+  transform-origin: 50% 92%;
+}
+
+.mode-work .pet-bob {
+  animation: work-bob calc(0.62s * var(--speed, 1)) ease-in-out infinite;
+  transform-origin: 50% 92%;
+}
+
+@keyframes think-hover {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-0.9deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(0.9deg);
+  }
+}
+
+@keyframes work-bob {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.006, 1.016);
+  }
+}
+
+.cat-think-face,
+.cat-work-face,
+.ghost-think-face,
+.ghost-work-face,
+.slime-think-face,
+.slime-work-face {
+  animation: face-fade 0.28s ease both;
+}
+
+@keyframes face-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------- 自己找事的小动作 ---------- */
+
+.accent-hop .pet-bob {
+  animation: hop calc(0.56s * var(--speed, 1)) cubic-bezier(0.2, 0.8, 0.3, 1.1) both;
+  transform-origin: 50% 100%;
+}
+
+.accent-wave .pet-bob {
+  animation: accent-wave calc(1.4s * var(--speed, 1)) ease-in-out both;
+  transform-origin: 50% 96%;
+}
+
+.accent-stretch .pet-bob {
+  animation: wake-stretch calc(1.5s * var(--speed, 1)) cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transform-origin: 50% 100%;
+}
+
+.accent-shy .pet-bob {
+  animation: accent-shy calc(1.2s * var(--speed, 1)) ease-in-out both;
+  transform-origin: 50% 100%;
+}
+
+.accent-look .pet-bob {
+  animation: accent-look calc(1.5s * var(--speed, 1)) ease-in-out both;
+  transform-origin: 50% 96%;
+}
+
+@keyframes accent-wave {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  25% {
+    transform: rotate(-3.2deg) translateY(-2px);
+  }
+  55% {
+    transform: rotate(3.2deg) translateY(-4px);
+  }
+  80% {
+    transform: rotate(-1.6deg) translateY(-1px);
+  }
+}
+
+@keyframes accent-shy {
+  0%,
+  100% {
+    transform: scale(1, 1) translateY(0);
+  }
+  35% {
+    transform: scale(1.035, 0.965) translateY(2px);
+  }
+  70% {
+    transform: scale(0.985, 1.015) translateY(-1px);
+  }
+}
+
+@keyframes accent-look {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  30% {
+    transform: translateX(-4px) rotate(-1.4deg);
+  }
+  70% {
+    transform: translateX(4px) rotate(1.4deg);
+  }
+}
+
+/* ---------- 地面阴影 + 背光：让角色"站"在桌面上、在深色壁纸上也不糊 ---------- */
+
+.pet-ground-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 205px;
+  height: 26px;
+  margin-left: -102px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(36, 56, 104, 0.34) 0%,
+    rgba(36, 56, 104, 0.16) 45%,
+    rgba(36, 56, 104, 0) 72%
+  );
+  filter: blur(1px);
+  z-index: 1;
+  pointer-events: none;
+  animation: ground-breathe calc(3.4s * var(--speed, 1)) ease-in-out infinite;
+}
+
+@keyframes ground-breathe {
+  0%,
+  100% {
+    transform: scale(1, 1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.04, 0.94);
+    opacity: 0.75;
+  }
+}
+
+.pet-halo {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 250px;
+  height: 250px;
+  margin-left: -125px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 62%,
+    rgba(168, 205, 255, 0.22) 0%,
+    rgba(168, 205, 255, 0.1) 42%,
+    rgba(168, 205, 255, 0) 68%
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
+.mode-drag .pet-halo,
+.mode-error .pet-halo {
+  opacity: 0.5;
+}
+
+.mode-angry .pet-halo {
+  background: radial-gradient(
+    circle at 50% 62%,
+    rgba(255, 168, 168, 0.26) 0%,
+    rgba(255, 168, 168, 0.1) 42%,
+    rgba(255, 168, 168, 0) 68%
+  );
+}
+
+/* ---------- 头顶道具 ---------- */
+
+.act-prop {
+  position: absolute;
+  left: 62%;
+  top: 2%;
+  z-index: 8;
+  font-size: 20px;
+  line-height: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 6px rgba(30, 50, 90, 0.28));
+  animation:
+    prop-pop 0.34s cubic-bezier(0.2, 0.9, 0.3, 1.2) both,
+    prop-float calc(2.2s * var(--speed, 1)) ease-in-out 0.34s infinite;
+}
+
+/* 入场：弹一下 */
+@keyframes prop-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.5);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 之后一直轻轻上下飘，直到换动作 */
+@keyframes prop-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(2deg);
+  }
+}
+
+/* ---------- 生气时的小蒸汽 ---------- */
+
+.anger-puff {
+  position: absolute;
+  left: 58%;
+  top: 4%;
+  width: 54px;
+  height: 40px;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.anger-puff::before,
+.anger-puff::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.95), rgba(255, 196, 196, 0.55));
+  animation: puff-rise 1.5s ease-out infinite;
+}
+
+.anger-puff::before {
+  width: 13px;
+  height: 13px;
+  left: 6px;
+  bottom: 0;
+}
+
+.anger-puff::after {
+  width: 9px;
+  height: 9px;
+  right: 4px;
+  bottom: 6px;
+  animation-delay: 0.4s;
+}
+
+@keyframes puff-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.6);
+  }
+  35% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(1.25);
+  }
+}
+
+/* ---------- token 角标 ---------- */
+
+.token-badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 7;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px 3px 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: #6b4a2a;
+  background: rgba(255, 252, 246, 0.93);
+  box-shadow:
+    0 4px 12px rgba(58, 35, 18, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.92);
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+  animation: bubble-in 0.24s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+}
+
+.token-badge-whale {
+  font-size: 11px;
+  line-height: 1;
+  filter: saturate(1.1);
+}
+
+.token-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f0a83c;
+  flex: none;
+}
+
+.token-badge.is-live .token-badge-dot {
+  background: #4bb96b;
+  animation: token-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes token-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* 饿了的时候整体稍微褪色，肉眼可辨但不影响识别角色 */
+.is-hungry .pet-anchor {
+  filter: saturate(0.92);
+}
+
+/* ==================================================================
+   鲸鱼娘（大肥鱼）：三视图精灵
+   ================================================================== */
+
+/* 走路：照原版绘制参数（摆动 ±3.5°、上下 7px，周期约 0.7s） */
+.mode-walk .pet-bob {
+  animation: whale-walk calc(0.7s * var(--speed, 1)) ease-in-out infinite;
+  transform-origin: 50% 92%;
+}
+
+@keyframes whale-walk {
+  0%,
+  100% {
+    transform: rotate(-3.5deg) translateY(0);
+  }
+  50% {
+    transform: rotate(3.5deg) translateY(-7px);
+  }
+}
+
+/* 原版的心声气泡：灰底斜体小字 */
+.speech-bubble.tone-inner {
+  background: rgba(232, 232, 238, 0.96);
+  color: #7d7d8a;
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------------
+
+/* ==================================================================
+   鲸鱼娘三视图（PNG + CSS 动效）
+   注：逐帧精灵方案（Codex Pet v2，192×208×8×11 精灵图）实测在透明置顶
+   窗口上一卡一卡的，已回退；该素材因授权不明也已从仓库移除。
+   ================================================================== */
+
+.whale-stage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* 翻转放在外层，避免和精灵的入场/呼吸动画抢 transform */
+.whale-flip {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transform-origin: 50% 100%;
+  transition: transform 0.18s ease-out;
+}
+
+.whale-stage.is-flipped .whale-flip {
+  transform: scaleX(-1);
+}
+
+.whale-art {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 8px 14px rgba(38, 66, 112, 0.3));
+  animation: whale-view-in 0.2s ease both;
+}
+
+@keyframes whale-view-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+

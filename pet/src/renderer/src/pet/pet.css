@@ -1,0 +1,680 @@
+:root {
+  --speed: 1;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+body.pet-page {
+  background: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  font-family: 'Microsoft YaHei UI', 'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif;
+  cursor: default;
+}
+
+.pet-root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.pet-anchor {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  width: 280px;
+  height: 280px;
+  transform: translateX(-50%) scale(var(--s, 1));
+  transform-origin: bottom center;
+  transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.18);
+  will-change: transform;
+  z-index: 2;
+}
+
+.pet-tilt {
+  width: 100%;
+  height: 100%;
+  transform: rotate(calc(var(--tilt, 0) * 5deg));
+  transform-origin: 50% 15%;
+  transition: transform 0.16s ease-out;
+}
+
+/* A soft contact shadow that fades in while the pet is lifted. */
+.pet-drag-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 270px;
+  height: 44px;
+  margin-left: -135px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(55, 36, 20, 0.5) 0%,
+    rgba(55, 36, 20, 0.26) 40%,
+    rgba(55, 36, 20, 0) 70%
+  );
+  opacity: 0;
+  transform: scale(0.72);
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mode-drag .pet-drag-shadow {
+  opacity: 0.95;
+  transform: scale(1);
+  animation: drag-shadow-pulse calc(1.6s * var(--speed, 1)) ease-in-out infinite;
+}
+
+@keyframes drag-shadow-pulse {
+  0%,
+  100% {
+    transform: scale(0.94);
+    opacity: 0.72;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.92;
+  }
+}
+
+.mode-drag .three-shadow {
+  opacity: 0;
+}
+
+.pet-bob,
+.pet-facing {
+  width: 100%;
+  height: 100%;
+}
+
+.pet-facing {
+  transform-origin: 50% 88%;
+  transition: transform 0.18s ease-out;
+}
+
+.pet-hit {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  -webkit-app-region: no-drag;
+}
+
+.pet-hit.is-pressed {
+  cursor: grabbing;
+}
+
+.pet-hit.is-drop-target {
+  filter: drop-shadow(0 0 16px rgba(255, 214, 94, 0.9));
+}
+
+.char-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 12px 14px rgba(64, 40, 18, 0.16));
+  pointer-events: none;
+}
+
+.three-pet {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 12px rgba(64, 40, 18, 0.14));
+}
+
+.three-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none;
+}
+
+.three-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 7%;
+  width: 54%;
+  height: 9%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(69, 43, 25, 0.3) 0%, rgba(69, 43, 25, 0) 70%);
+  filter: blur(3px);
+}
+
+.three-pet.is-loading::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 24%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  border: 2px solid rgba(242, 162, 79, 0.35);
+  border-top-color: #f2a24f;
+  animation: three-spin 0.9s linear infinite;
+}
+
+@keyframes three-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.custom-art-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.custom-art {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 12px 14px rgba(40, 30, 50, 0.2));
+  transform-origin: bottom center;
+}
+
+.custom-missing {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-size: 64px;
+  font-weight: 800;
+  color: #b9a38d;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+}
+
+/* ------------------------------------------------------------------ bubbles */
+
+.speech-bubble {
+  position: absolute;
+  /* 左右同时定位 + fit-content：可用宽度是整个窗口，而不是 left:50% 右半边的 150px。
+     之前长文本被迫换 6 行、顶出窗口，就是这个收缩宽度导致的。 */
+  left: 9px;
+  right: 9px;
+  bottom: calc(16px + 280px * var(--s, 1) + 10px);
+  margin-inline: auto;
+  width: fit-content;
+  max-width: 100%;
+  z-index: 6;
+  padding: 10px 17px;
+  border-radius: 17px;
+  background: rgba(255, 252, 246, 0.98);
+  color: #5d4333;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+  text-align: center;
+  box-shadow:
+    0 10px 28px rgba(58, 35, 18, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.9);
+  animation: bubble-in 0.24s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+  transition: bottom 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.18);
+  white-space: pre-wrap;
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 15px;
+  height: 15px;
+  background: inherit;
+  border-radius: 3px;
+  transform: translateX(-50%) rotate(45deg);
+  box-shadow: 4px 4px 8px rgba(58, 35, 18, 0.06);
+}
+
+.speech-bubble.tone-happy {
+  background: #fff8e9;
+  color: #74501f;
+}
+
+.speech-bubble.tone-angry {
+  background: #fff0ed;
+  color: #a63a2b;
+  box-shadow:
+    0 10px 28px rgba(120, 40, 30, 0.2),
+    inset 0 0 0 1px rgba(255, 226, 220, 0.9);
+}
+
+.speech-bubble.tone-sleepy {
+  background: #f1f5ff;
+  color: #5c6b99;
+}
+
+.speech-bubble.tone-remind {
+  background: #fff7df;
+  color: #8b6218;
+  box-shadow:
+    0 10px 30px rgba(130, 90, 20, 0.22),
+    inset 0 0 0 1px rgba(255, 240, 190, 0.95);
+}
+
+@keyframes bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.drop-hint {
+  position: absolute;
+  left: 50%;
+  bottom: calc(16px + 280px * var(--s, 1) + 70px);
+  transform: translateX(-50%);
+  z-index: 7;
+  padding: 8px 15px;
+  border-radius: 999px;
+  background: #fff6d8;
+  color: #8b6218;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 8px 22px rgba(120, 80, 20, 0.2);
+  animation: hint-bob 1.1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes hint-bob {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+/* -------------------------------------------------------------------- effects */
+
+.fx-layer {
+  position: absolute;
+  left: 50%;
+  bottom: calc(12px + 280px * var(--s, 1) * 0.84);
+  width: 0;
+  height: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.fx-particle {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  font-size: var(--fx-size, 14px);
+  line-height: 1;
+  opacity: 0;
+  transform: translate(var(--fx-x), 0);
+  animation: fx-float 1.25s ease-out var(--fx-delay, 0s) forwards;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.08));
+}
+
+.fx-hearts .fx-particle:nth-child(odd) {
+  font-size: calc(var(--fx-size, 14px) * 1.2);
+}
+
+.fx-sparkles .fx-particle {
+  animation-name: fx-sparkle;
+}
+
+.fx-zzz .fx-particle {
+  font-weight: 900;
+  font-family: 'Comic Sans MS', 'Microsoft YaHei UI', sans-serif;
+  color: #7c87bb;
+  text-shadow: 0 1px 0 #fff;
+  animation: fx-zzz 1.3s ease-out var(--fx-delay, 0s) forwards;
+}
+
+.fx-crumbs .fx-particle {
+  color: #a86b39;
+  font-size: calc(var(--fx-size, 14px) * 0.55);
+  animation: fx-crumb 0.9s ease-in var(--fx-delay, 0s) forwards;
+}
+
+.fx-dizzy .fx-particle {
+  color: #ffcf4a;
+  text-shadow: 0 0 6px rgba(255, 200, 60, 0.7);
+  animation: fx-orbit 1.25s linear var(--fx-delay, 0s) infinite;
+}
+
+@keyframes fx-float {
+  0% {
+    opacity: 0;
+    transform: translate(var(--fx-x), 0) scale(0.5);
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--fx-x) * 1.5), -92px) scale(1.15) rotate(10deg);
+  }
+}
+
+@keyframes fx-sparkle {
+  0% {
+    opacity: 0;
+    transform: translate(var(--fx-x), 10px) scale(0.2) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(var(--fx-x), -6px) scale(1) rotate(40deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--fx-x) * 1.3), -76px) scale(0.5) rotate(140deg);
+  }
+}
+
+@keyframes fx-zzz {
+  0% {
+    opacity: 0;
+    transform: translate(var(--fx-x), 0) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--fx-x) + 26px), -78px) scale(1.4);
+  }
+}
+
+@keyframes fx-crumb {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--fx-x), 70px) scale(0.4);
+  }
+}
+
+@keyframes fx-orbit {
+  from {
+    opacity: 0.9;
+    transform: rotate(0deg) translateX(42px) rotate(0deg) scale(0.9);
+  }
+  to {
+    opacity: 0.9;
+    transform: rotate(360deg) translateX(42px) rotate(-360deg) scale(0.9);
+  }
+}
+
+/* ------------------------------------------------------------------ file snack */
+
+.food-snack {
+  position: absolute;
+  left: 50%;
+  bottom: 22%;
+  width: 56px;
+  height: 64px;
+  margin-left: -28px;
+  z-index: 5;
+  pointer-events: none;
+  transform-origin: 50% 88%;
+  animation: snack-nibble 2.5s cubic-bezier(0.25, 0.8, 0.35, 1) forwards;
+  filter: drop-shadow(0 5px 7px rgba(50, 32, 18, 0.26));
+}
+
+/* The 3D cat's head sits higher than the 2D art, so hold the snack at its mouth. */
+.pet-anchor:has(.three-pet) .food-snack {
+  bottom: 30%;
+}
+
+.food-doc {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #fffefa 0%, #fff7e8 100%);
+  box-shadow: inset 0 0 0 1px rgba(120, 90, 60, 0.18);
+  animation: snack-bites 2.5s linear forwards;
+}
+
+.food-fold {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 15px;
+  height: 15px;
+  background: linear-gradient(135deg, var(--doc-tint, #d49a54) 0 48%, transparent 50%);
+  opacity: 0.85;
+}
+
+.food-icon {
+  display: block;
+  width: 31px;
+  height: 31px;
+  object-fit: contain;
+  -webkit-user-drag: none;
+}
+
+.food-ext {
+  max-width: 42px;
+  overflow: hidden;
+  color: var(--doc-tint, #d49a54);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.food-name {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 4px);
+  display: block;
+  max-width: 132px;
+  padding: 2px 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 252, 244, 0.96);
+  color: #7a5a3f;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(60, 40, 20, 0.16);
+}
+
+.food-count {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: rgba(55, 40, 25, 0.68);
+  color: #fff8ea;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.food-crumb {
+  position: absolute;
+  left: 50%;
+  bottom: 9px;
+  width: var(--crumb-size, 5px);
+  height: var(--crumb-size, 5px);
+  margin-left: -2px;
+  border-radius: 50%;
+  background: #b9844e;
+  opacity: 0;
+  animation: snack-crumb 0.85s ease-in var(--crumb-delay, 0s) forwards;
+}
+
+@keyframes snack-nibble {
+  0% {
+    opacity: 0;
+    transform: translate(12px, 30px) rotate(16deg) scale(0.45);
+  }
+  9% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  20% {
+    transform: translate(0, -2px) rotate(-2deg) scale(1.02);
+  }
+  26% {
+    transform: translate(0, -3px) rotate(2deg) scale(0.9);
+  }
+  36% {
+    transform: translate(0, -5px) rotate(-2deg) scale(0.9);
+  }
+  42% {
+    transform: translate(0, -7px) rotate(3deg) scale(0.78);
+  }
+  52% {
+    transform: translate(0, -9px) rotate(-3deg) scale(0.78);
+  }
+  58% {
+    transform: translate(0, -11px) rotate(4deg) scale(0.64);
+  }
+  70% {
+    transform: translate(0, -13px) rotate(-4deg) scale(0.64);
+  }
+  76% {
+    transform: translate(0, -15px) rotate(5deg) scale(0.48);
+  }
+  88% {
+    opacity: 1;
+    transform: translate(0, -18px) rotate(-2deg) scale(0.3);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0, -34px) rotate(0deg) scale(0.05);
+  }
+}
+
+@keyframes snack-bites {
+  0%,
+  22% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  27% {
+    clip-path: polygon(
+      0 12%,
+      16% 0,
+      34% 14%,
+      52% 0,
+      72% 12%,
+      88% 0,
+      100% 10%,
+      100% 100%,
+      0 100%
+    );
+  }
+  40% {
+    clip-path: polygon(
+      0 26%,
+      18% 12%,
+      38% 28%,
+      56% 10%,
+      76% 26%,
+      100% 14%,
+      100% 100%,
+      0 100%
+    );
+  }
+  55% {
+    clip-path: polygon(
+      0 44%,
+      20% 28%,
+      42% 46%,
+      60% 26%,
+      80% 44%,
+      100% 30%,
+      100% 100%,
+      0 100%
+    );
+  }
+  72% {
+    clip-path: polygon(
+      0 62%,
+      22% 46%,
+      44% 66%,
+      64% 44%,
+      84% 62%,
+      100% 48%,
+      100% 100%,
+      0 100%
+    );
+  }
+  88% {
+    clip-path: polygon(
+      0 84%,
+      24% 68%,
+      48% 88%,
+      70% 66%,
+      100% 84%,
+      100% 100%,
+      0 100%
+    );
+  }
+  100% {
+    clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+  }
+}
+
+@keyframes snack-crumb {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--crumb-x, 0px), 58px) scale(0.35);
+  }
+}

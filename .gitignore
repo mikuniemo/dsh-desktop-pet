@@ -1,0 +1,10 @@
+node_modules/
+out/
+dist/
+build/
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+pet/.vite/
+pet/release/

@@ -1,0 +1,32 @@
+{
+  "name": "dsh-desktop-pet-app",
+  "productName": "DSH Desktop Pet",
+  "version": "0.1.0",
+  "description": "DSH 桌宠的桌面窗口：透明置顶、可拖拽、会跟着 DeepSeek Harness 的工具调用演出。",
+  "main": "./out/main/index.js",
+  "author": "mikun",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "dist": "npm run build && electron-builder --win portable"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "electron": "45.1.0",
+    "electron-builder": "26.18.0",
+    "electron-vite": "6.0.0",
+    "typescript": "5.9.3",
+    "vite": "8.3.5"
+  }
+}
